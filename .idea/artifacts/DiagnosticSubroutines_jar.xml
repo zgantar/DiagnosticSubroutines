@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="DiagnosticSubroutines:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/DiagnosticSubroutines_jar</output-path>
+    <root id="archive" name="DiagnosticSubroutines.jar">
+      <element id="module-output" name="DiagnosticSubroutines" />
+      <element id="extracted-dir" path="C:/Libraries/ApacheCommonsLang/3.5/commons-lang3-3.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="C:/Libraries/Tinkerforge/2.1.11/Tinkerforge.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
