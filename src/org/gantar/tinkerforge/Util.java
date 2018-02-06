@@ -1,28 +1,21 @@
-package org.gantar.openhab.diagnostics;
+package org.gantar.tinkerforge;
 
 import com.tinkerforge.*;
-import org.gantar.openhab.diagnostics.AmbientLight.AmbientLightSubroutine;
-import org.gantar.openhab.diagnostics.Humidity.HumiditySubroutine;
-import org.gantar.openhab.diagnostics.IO.IOSubroutine;
-import org.gantar.openhab.diagnostics.MasterBrick.MasterBrickSubroutine;
-import org.gantar.openhab.diagnostics.Temperature.TemperatureSubroutine;
-//import org.reflections.Reflections;
+import org.gantar.tinkerforge.AmbientLight.AmbientLightSubroutine;
+import org.gantar.tinkerforge.Humidity.HumiditySubroutine;
+import org.gantar.tinkerforge.IO.IOSubroutine;
+import org.gantar.tinkerforge.MasterBrick.MasterBrickSubroutine;
+import org.gantar.tinkerforge.Temperature.TemperatureSubroutine;
 
 import java.util.HashMap;
 import java.util.ResourceBundle;
+
+//import org.reflections.Reflections;
 
 /**
  * Created by zgantar on 5. 05. 2017.
  */
 public class Util {
-    public static void reset(IPConnection ipcon, Device.Identity identity) throws TimeoutException, NotConnectedException {
-        String parentUid = identity.connectedUid;
-        BrickMaster parent = new BrickMaster(parentUid, ipcon);
-        String masterUid = parent.getIdentity().connectedUid;
-        BrickMaster master = new BrickMaster(masterUid, ipcon);
-        parent.reset();
-        master.reset();
-    }
 
     static HashMap<String, HashMap<String, Device>> getDevices(IPConnection ipConnection) {
         HashMap<String, HashMap<String, Device>> result = new HashMap<>();
@@ -62,7 +55,10 @@ public class Util {
 
         try {
             ipConnection.enumerate();
+            Thread.sleep(1500);
         } catch (NotConnectedException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -111,15 +107,8 @@ public class Util {
         devices.put(uid, new BrickMaster(uid, ipConnection));
     }
 
-    private static void addBrickletDualRelay(HashMap<String, HashMap<String, Device>> result, String uid, IPConnection ipConnection) {
-        HashMap<String, Device> devices = result.computeIfAbsent(BrickletDualRelay.DEVICE_DISPLAY_NAME, k -> new HashMap<>());
-
-        devices.put(uid, new BrickletDualRelay(uid, ipConnection));
-    }
-
     static void startDiagnose(HashMap<String, HashMap<String, Device>> devices, ResourceBundle resources, IPConnection ipcon) {
-//        Reflections reflections = new Reflections("org.gantar.openhab.diagnostics.");
-//        Set<Class<? extends org.gantar.openhab.diagnostics.DiagnosticInterface>> results = reflections.getSubTypesOf(org.gantar.openhab.diagnostics.DiagnosticInterface.class);
+
 
         MasterBrickSubroutine masterBrickSubroutine = new MasterBrickSubroutine();
         masterBrickSubroutine.diagnose(devices, resources, ipcon);
@@ -136,38 +125,14 @@ public class Util {
         AmbientLightSubroutine ambientLightSubroutine = new AmbientLightSubroutine();
         ambientLightSubroutine.diagnose(devices, resources, ipcon);
 
-        DualRelaySubroutine dualRelaytSubroutine = new DualRelaySubroutine();
-        dualRelaytSubroutine.diagnose(devices, resources, ipcon);
-
-
-/**     Reflections reflections = new Reflections("org.gantar.openhab.diagnostics.");
-        Set<Class<? extends org.gantar.openhab.diagnostics.DiagnosticInterface>> results = reflections.getSubTypesOf(org.gantar.openhab.diagnostics.DiagnosticInterface.class);
-
-        for (Class clazz:results) {
-            try {
-                Constructor c = clazz.getConstructor();
-                Object obj = ((clazz.getClass())); c.newInstance();
-                Method[] declaredMethods = clazz.getClass().getDeclaredMethods();
-                Class<?>[] params =  new Class[3];
-                params[0] = HashMap.class;
-                params[1] = ResourceBundle.class;
-                params[2] = IPConnection.class;
-                Method m = clazz.getClass().getMethod("diagnose", params);
-                    String mName = m.getName();
-                    if (mName.equalsIgnoreCase("diagnose")) {
-                        m.invoke(obj, devices, resources, ipcon);
-                    }
-                } catch (IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException e) {
-                System.out.println("Napaka pri klicu diagnose!");
-                e.printStackTrace();
-            }
-        }
- */
+//        DualRelaySubroutine dualRelaytSubroutine = new DualRelaySubroutine();
+//        dualRelaytSubroutine.diagnose(devices, resources, ipcon);
     }
 
+/**
     private String executeCommand(String command) {
 
-		StringBuffer output = new StringBuffer();
+		StringBuilder output = new StringBuilder();
 		Process p;
 
 		try {
@@ -176,11 +141,21 @@ public class Util {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String line = "";
 			while ((line = reader.readLine())!= null) {
-				output.append(line + "\n");
+				output.append(line).append("\n");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return output.toString();
+        return output.toString();
 	}
+*/
+	public static void resetParent(String uid, IPConnection ipConn) {
+        System.out.println("Sem v RESET_PARENT metodi in resetiram " + uid);
+//        try {
+            BrickMaster parent = new BrickMaster(uid, ipConn);
+//            parent.reset();
+//        } catch (TimeoutException | NotConnectedException e) {
+//            e.printStackTrace();
+//        }
+    }
 }

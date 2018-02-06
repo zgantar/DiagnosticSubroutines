@@ -1,4 +1,4 @@
-package org.gantar.openhab.diagnostics;
+package org.gantar.tinkerforge;
 
 import com.tinkerforge.AlreadyConnectedException;
 import com.tinkerforge.Device;

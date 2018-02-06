@@ -1,7 +1,7 @@
-package org.gantar.openhab.diagnostics.DualRelay;
+package org.gantar.tinkerforge.DualRelay;
 
 import com.tinkerforge.*;
-import org.gantar.openhab.diagnostics.DiagnosticInterface;
+import org.gantar.tinkerforge.DiagnosticInterface;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,14 +19,14 @@ public class DualRelaySubroutine implements DiagnosticInterface {
 
         for (Map.Entry<String, Device> entry : devices.entrySet()) {
             BrickletDualRelay device = (BrickletDualRelay) entry.getValue();
-            try {
+/**            try {
 
-            } catch (TimeoutException e) {
-                e.printStackTrace();
+//            } catch (TimeoutException e) {
+//                e.printStackTrace();
             } catch (NotConnectedException e) {
                 e.printStackTrace();
             }
-
+*/
         }
     }
 
