@@ -24,12 +24,12 @@ public class HumiditySubroutine implements DiagnosticInterface {
         }
 
         try {
-            System.out.println("Preverjam število hum senzorjev, ki so odgovoril");
+//            System.out.println("Preverjam število hum senzorjev, ki so odgovoril");
             int i = humBricks.length;
             for (Device device : devices.values()) {
                 for (String humUID : humBricks) {
                     if (device.getIdentity().uid.equals(humUID)) {
-                        System.out.println("Našel hum " + device.getIdentity().uid);
+//                        System.out.println("Našel hum " + device.getIdentity().uid);
                         deviceVisits.put(humUID, true);
                         i--;
                         break;
@@ -41,7 +41,9 @@ public class HumiditySubroutine implements DiagnosticInterface {
                 System.out.println("!!!!!!Število zapisov v nastavitvah ne ustreza številu hum senzorjev!!!!");
                 for (Map.Entry entry : deviceVisits.entrySet()) {
                     if (!(boolean)entry.getValue()) {
-                        Util.resetParent(resources.getString("BrickletHumidity" + entry.getKey()), ipcon);
+                        if (!Util.resetTinkerforge(resources, "/")) {
+                            return;
+                        }
                     }
                 }
                 //tukaj potrebno dodat reset elektrike!!!!!
@@ -51,13 +53,15 @@ public class HumiditySubroutine implements DiagnosticInterface {
             for (Map.Entry<String, Device> entry : devices.entrySet()) {
                 BrickletHumidity device = (BrickletHumidity) entry.getValue();
 
-                System.out.println("Preverjam poročano vlažnost");
+//                System.out.println("Preverjam poročano vlažnost");
                 if (device.getHumidity() <= 100 || device.getHumidity() > 1000) {
                     String parent = device.getIdentity().connectedUid;
                     System.out.println("Poročana vlažnost je izven meja normale, resetiram Master brick - " + parent);
                     if (parent.equals(resources.getString("BrickletHumidity_" + device.getIdentity().uid))) {
                         System.out.println("Poročan in nastavljen UID očeta sta enaka, resetiram!!!!!!!!!!!!!!!!");
-                        Util.resetParent(parent, ipcon);
+                        if (!Util.resetTinkerforge(resources, device.getIdentity().uid)) {
+                            return;
+                        }
                     } else {
                         System.out.println("Poročan in nastavljen UID očeta NISTA enaka, PREVERI!!!!!!!");
                     }

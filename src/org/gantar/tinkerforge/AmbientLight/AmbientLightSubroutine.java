@@ -24,12 +24,12 @@ public class AmbientLightSubroutine implements DiagnosticInterface {
         }
 
         try {
-            System.out.println("Preverjam število amb senzorjev, ki so odgovoril");
+//            System.out.println("Preverjam število amb senzorjev, ki so odgovoril");
             int i = ambBricks.length;
             for (Device device : devices.values()) {
                 for (String ambUID : ambBricks) {
                     if (device.getIdentity().uid.equals(ambUID)) {
-                        System.out.println("Našel amb " + device.getIdentity().uid);
+//                        System.out.println("Našel amb " + device.getIdentity().uid);
                         deviceVisits.put(ambUID, true);
                         i--;
                         break;
@@ -41,7 +41,9 @@ public class AmbientLightSubroutine implements DiagnosticInterface {
                 System.out.println("!!!!!!Število zapisov v nastavitvah ne ustreza številu amb senzorjev!!!!");
                 for (Map.Entry entry : deviceVisits.entrySet()) {
                     if (!(boolean) entry.getValue()) {
-                        Util.resetParent(resources.getString("BrickletAmbientLight" + entry.getKey()), ipcon);
+                        if (!Util.resetTinkerforge(resources, "/")) {
+                            return;
+                        }
                     }
                 }
                 //tukaj potrebno dodat reset elektrike!!!!!
@@ -51,13 +53,15 @@ public class AmbientLightSubroutine implements DiagnosticInterface {
             for (Map.Entry<String, Device> entry : devices.entrySet()) {
                 BrickletAmbientLight device = (BrickletAmbientLight) entry.getValue();
 
-                System.out.println("Preverjam poročano svetlost");
+//                System.out.println("Preverjam poročano svetlost");
                 if (device.getIlluminance() < 0 || device.getIlluminance() > 10000) {
                     String parent = device.getIdentity().connectedUid;
                     System.out.println("Poročana svetlost je izven meja normale, resetiram Master brick - " + parent);
                     if (parent.equals(resources.getString("BrickletAmbientLight_" + device.getIdentity().uid))) {
                         System.out.println("Poročan in nastavljen UID očeta sta enaka, resetiram!!!!!!!!!!!!!!!!");
-                        Util.resetParent(parent, ipcon);
+                        if (!Util.resetTinkerforge(resources, device.getIdentity().uid)) {
+                            return;
+                        }
                     } else {
                         System.out.println("Poročan in nastavljen UID očeta NISTA enaka, PREVERI!!!!!!!");
                     }

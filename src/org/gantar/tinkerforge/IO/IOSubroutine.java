@@ -26,12 +26,12 @@ public class IOSubroutine implements DiagnosticInterface {
 
         try {
             if (devices.size() > 0) {
-                System.out.println("Preverjam število IO4, ki so odgovoril");
+//                System.out.println("Preverjam število IO4, ki so odgovoril");
                 int i = io4s.length;
                 for (Device device : devices.values()) {
                     for (String io4UID : io4s) {
                         if (device.getIdentity().uid.equals(io4UID)) {
-                            System.out.println("Našel IO4 " + device.getIdentity().uid);
+//                            System.out.println("Našel IO4 " + device.getIdentity().uid);
                             deviceVisits.put(io4UID, true);
                             i--;
                             break;
@@ -43,7 +43,9 @@ public class IOSubroutine implements DiagnosticInterface {
                     System.out.println("!!!!!!Število zapisov v nastavitvah ne ustreza številu IO4!!!!");
                     for (Map.Entry entry : deviceVisits.entrySet()) {
                         if (!(boolean)entry.getValue()) {
-                            Util.resetParent(resources.getString("IO4_" + entry.getKey() + "_parent"), ipcon);
+                            if (!Util.resetTinkerforge(resources,"/")) {
+                                return;
+                            }
                         }
                     }
                     //tukaj potrebno dodat reset elektrike!!!!!
@@ -86,12 +88,12 @@ public class IOSubroutine implements DiagnosticInterface {
                     }
 
                     if (devices != null) {
-                        System.out.println("Preverjam število IO16, ki so odgovoril");
+//                        System.out.println("Preverjam število IO16, ki so odgovoril");
                         int n = io16s.length;
                         for (Device device : devices.values()) {
                             for (String io16UID : io16s) {
                                 if (device.getIdentity().uid.equals(io16UID)) {
-                                    System.out.println("Našel IO16 " + device.getIdentity().uid);
+//                                    System.out.println("Našel IO16 " + device.getIdentity().uid);
                                     deviceVisits.put(io16UID, true);
                                     n--;
                                     break;
@@ -103,7 +105,9 @@ public class IOSubroutine implements DiagnosticInterface {
                             System.out.println("Število zapisov v nastavitvah ne ustreza številu IO16!!!!");
                             for (Map.Entry entry : deviceVisits.entrySet()) {
                                 if (!(boolean)entry.getValue()) {
-                                    Util.resetParent(resources.getString("IO16_" + entry.getKey() + "_parent"), ipcon);
+                                    if (!Util.resetTinkerforge(resources, "/")) {
+                                        return;
+                                    }
                                 }
                             }
                             //tukaj potrebno dodat reset elektrike!!!!!

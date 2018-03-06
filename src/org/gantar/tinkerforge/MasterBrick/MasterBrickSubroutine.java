@@ -19,12 +19,12 @@ import java.util.ResourceBundle;
 
             try {
                 if (devices != null) {
-                    System.out.println("Preverjam število master brickov, ki so odgovorili");
+//                    System.out.println("Preverjam število master brickov, ki so odgovorili");
                     int i = masterBricks.length;
                     for (Device device : devices.values()) {
                         for (String masterBrickUID : masterBricks) {
                             if (device.getIdentity().uid.equals(masterBrickUID)) {
-                                System.out.println("Našel master brick " + device.getIdentity().uid);
+//                                System.out.println("Našel master brick " + device.getIdentity().uid);
                                 i--;
                                 break;
                             }
@@ -38,7 +38,7 @@ import java.util.ResourceBundle;
 
                 for (Map.Entry<String, Device> entry : devices.entrySet()) {
                     BrickMaster device = (BrickMaster) entry.getValue();
-                    System.out.println("Preverjam master brick " + device.getIdentity().uid);
+//                    System.out.println("Preverjam master brick " + device.getIdentity().uid);
 
                     if (device.isStatusLEDEnabled()) {
                         System.out.println("Ugašam status LED");
@@ -49,7 +49,7 @@ import java.util.ResourceBundle;
                         device.reset();
                     } else {
                         String deviceAddress = resources.getString("BrickMaster_" + device.getIdentity().uid + "_address");
-                        System.out.println("Preverjam RS485 nastavitve");
+//                        System.out.println("Preverjam RS485 nastavitve");
                         short address;
                         if (deviceAddress != null) {
                             address = Short.parseShort(deviceAddress);
@@ -59,7 +59,7 @@ import java.util.ResourceBundle;
                         }
                         //preverjamo ali je master ali slave
                         if (address == 0) {
-                            System.out.println("Preverjam master master brick");
+//                            System.out.println("Preverjam master master brick");
                             if (device.getRS485Address() != 0) {
                                     System.out.println("Master master brick nima nastavljen master naslov, nastavljam");
                                     device.setRS485Address((short) 0);
@@ -73,7 +73,7 @@ import java.util.ResourceBundle;
                                     }
                                 }
                             } else {
-                                System.out.println("Preverjam slave master brick ");
+//                                System.out.println("Preverjam slave master brick ");
                                 if (device.getRS485Address() != Short.parseShort(deviceAddress)) {
                                     System.out.println("Nastavljam slave naslov " + deviceAddress);
                                     device.setRS485Address(Short.parseShort(deviceAddress));

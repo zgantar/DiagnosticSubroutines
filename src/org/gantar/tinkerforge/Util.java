@@ -7,6 +7,8 @@ import org.gantar.tinkerforge.IO.IOSubroutine;
 import org.gantar.tinkerforge.MasterBrick.MasterBrickSubroutine;
 import org.gantar.tinkerforge.Temperature.TemperatureSubroutine;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
@@ -21,7 +23,7 @@ public class Util {
         HashMap<String, HashMap<String, Device>> result = new HashMap<>();
 
         ipConnection.addEnumerateListener((uid, connectedUid, position, hardwareVersion, firmwareVersion, deviceIdentifier, enumerationType) -> {
-            System.out.println("Dobili klic naprave - " + uid);
+//            System.out.println("Dobili klic naprave - " + uid);
             switch (deviceIdentifier) {
                 case BrickMaster.DEVICE_IDENTIFIER:
                     addBrickMaster(result, uid, ipConnection);
@@ -129,8 +131,8 @@ public class Util {
 //        dualRelaytSubroutine.diagnose(devices, resources, ipcon);
     }
 
-/**
-    private String executeCommand(String command) {
+
+    private static String executeCommand(String command) {
 
 		StringBuilder output = new StringBuilder();
 		Process p;
@@ -139,20 +141,46 @@ public class Util {
 			p = Runtime.getRuntime().exec(command);
 			p.waitFor();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String line = "";
+			String line;
 			while ((line = reader.readLine())!= null) {
 				output.append(line).append("\n");
 			}
+			System.out.println(line);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
         return output.toString();
 	}
-*/
-	public static void resetParent(String uid, IPConnection ipConn) {
-        System.out.println("Sem v RESET_PARENT metodi in resetiram " + uid);
+
+	public static boolean resetTinkerforge(ResourceBundle resources, String source) {
+        System.out.println("Sem v RESET_TINKERFORGE metodi zaradi " + source);
+        String returnString;
+        returnString = executeCommand(resources.getString("reset_switch_OFF"));
+        if (returnString.equals("OFF")) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            returnString = executeCommand(resources.getString("reset_switch_ON"));
+            if (returnString.equals("ON")) {
+                returnString = executeCommand("service openhab2 restart");
+                if (returnString.equals("")) {
+                    return true;
+                }
+                System.out.println("NAPAKA pri resetiranju openHABa!!!!!");
+                return false;
+            } else {
+                System.out.println("NAPAKA pri ponovnem priklopu elketrike Tinkerforge modulom!!!!!");
+                return false;
+            }
+        } else {
+            System.out.println("NAPAKA pri izklopu elektrike Tinkerforge modulom!!!!!");
+            return false;
+        }
+
 //        try {
-            BrickMaster parent = new BrickMaster(uid, ipConn);
+//            BrickMaster parent = new BrickMaster(uid, ipConn);
 //            parent.reset();
 //        } catch (TimeoutException | NotConnectedException e) {
 //            e.printStackTrace();

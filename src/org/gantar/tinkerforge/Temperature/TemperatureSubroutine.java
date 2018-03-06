@@ -23,12 +23,12 @@ public class TemperatureSubroutine implements DiagnosticInterface {
         }
 
         try {
-            System.out.println("Preverjam število temp senzorjev, ki so odgovoril");
+//            System.out.println("Preverjam število temp senzorjev, ki so odgovoril");
             int i = tempBricks.length;
             for (Device device : devices.values()) {
                 for (String tempUID : tempBricks) {
                     if (device.getIdentity().uid.equals(tempUID)) {
-                        System.out.println("Našel temp " + device.getIdentity().uid);
+//                        System.out.println("Našel temp " + device.getIdentity().uid);
                         deviceVisits.put(tempUID, true);
                         i--;
                         break;
@@ -40,7 +40,9 @@ public class TemperatureSubroutine implements DiagnosticInterface {
                 System.out.println("!!!!!!Število zapisov v nastavitvah ne ustreza številu temp senzorjev!!!!");
                 for (Map.Entry entry : deviceVisits.entrySet()) {
                     if (!(boolean)entry.getValue()) {
-                        Util.resetParent(resources.getString("BrickletTemperature_" + entry.getKey()), ipcon);
+                        if (!Util.resetTinkerforge(resources, "/")) {
+                            return;
+                        }
                     }
                 }
                 //tukaj potrebno dodat reset elektrike!!!!!
@@ -49,18 +51,20 @@ public class TemperatureSubroutine implements DiagnosticInterface {
 
             for (Map.Entry<String, Device> entry : devices.entrySet()) {
                 BrickletTemperature device = (BrickletTemperature) entry.getValue();
-                System.out.println("Preverjam I2C nastavitev");
+//                System.out.println("Preverjam I2C nastavitev");
                 if (device.getI2CMode() != BrickletTemperature.I2C_MODE_SLOW) {
                     System.out.println("Nastavljam I2C_MODE_SLOW");
                     device.setI2CMode(BrickletTemperature.I2C_MODE_SLOW);
                 }
-                System.out.println("Preverjam poročano temperaturo");
+//                System.out.println("Preverjam poročano temperaturo");
                 if (device.getTemperature() <= 1000 || device.getTemperature() >= 3500) {
                     String parent = device.getIdentity().connectedUid;
                     System.out.println("Poročana temperatura je izven meja normale, resetiram Master brick - " + parent);
                     if (parent.equals(resources.getString("BrickletTemperature_" + device.getIdentity().uid))) {
                         System.out.println("Poročan in nastavljen UID očeta sta enaka, resetiram!!!!!!!!!!!!!!!!");
-                        Util.resetParent(parent, ipcon);
+                        if (!Util.resetTinkerforge(resources, device.getIdentity().uid)) {
+                            return;
+                        }
                     } else {
                         System.out.println("Poročan in nastavljen UID očeta NISTA enaka, PREVERI!!!!!!!");
                     }
