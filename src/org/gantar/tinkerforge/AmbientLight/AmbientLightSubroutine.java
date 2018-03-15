@@ -37,18 +37,18 @@ public class AmbientLightSubroutine implements DiagnosticInterface {
                 }
             }
 
-            if (i != 0) {
-                System.out.println("!!!!!!Število zapisov v nastavitvah ne ustreza številu amb senzorjev!!!!");
-                for (Map.Entry entry : deviceVisits.entrySet()) {
-                    if (!(boolean) entry.getValue()) {
-                        if (!Util.resetTinkerforge(resources, "/")) {
-                            return;
-                        }
-                    }
-                }
-                //tukaj potrebno dodat reset elektrike!!!!!
-                return;
-            }
+//            if (i != 0) {
+//                System.out.println("!!!!!!Število zapisov v nastavitvah ne ustreza številu amb senzorjev!!!!");
+//                for (Map.Entry entry : deviceVisits.entrySet()) {
+//                    if (!(boolean) entry.getValue()) {
+//                        if (!Util.resetTinkerforge(resources, "/")) {
+//                            return;
+//                        }
+//                    }
+//                }
+//                //tukaj potrebno dodat reset elektrike!!!!!
+//                return;
+//            }
 
             for (Map.Entry<String, Device> entry : devices.entrySet()) {
                 BrickletAmbientLight device = (BrickletAmbientLight) entry.getValue();

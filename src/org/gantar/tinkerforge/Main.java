@@ -21,13 +21,11 @@ public class Main {
         try {
             Socket socket = new Socket();
             socket.connect(new InetSocketAddress("google.com", 80));
-//            resources = ResourceBundle.getBundle("org.gantar.tinkerforge.elements");
             if (StringUtils.substring(socket.getLocalAddress().toString(), 9, 10).equals("1")) {
                 resources = ResourceBundle.getBundle("org.gantar.tinkerforge.elements");
             } else {
                 resources = ResourceBundle.getBundle("org.gantar.tinkerforge.elements_test");
             }
-
             ipcon = new IPConnection(); // Create IP connection
             ipcon.connect(resources.getString("HOST"), new Integer(resources.getString("PORT")));
 

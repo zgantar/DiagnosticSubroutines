@@ -7,8 +7,10 @@ import org.gantar.tinkerforge.IO.IOSubroutine;
 import org.gantar.tinkerforge.MasterBrick.MasterBrickSubroutine;
 import org.gantar.tinkerforge.Temperature.TemperatureSubroutine;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
@@ -152,38 +154,59 @@ public class Util {
         return output.toString();
 	}
 
+	public static boolean executeHTTPRequest(String command, String state) {
+        try {
+            HttpURLConnection con = (HttpURLConnection) new URL(command).openConnection();
+            con.setRequestMethod("POST");
+            con.setRequestProperty("Accept", "application/json");
+            con.setRequestProperty("Content-Type", "text/plain");
+            con.setDoOutput(true);
+
+            String data =  state;
+            OutputStreamWriter out = new OutputStreamWriter(con.getOutputStream());
+            out.write(data);
+            out.close();
+
+            if (con.getResponseCode() == 200) {
+                return true;
+            } else return false;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
 	public static boolean resetTinkerforge(ResourceBundle resources, String source) {
         System.out.println("Sem v RESET_TINKERFORGE metodi zaradi " + source);
         String returnString;
-        returnString = executeCommand(resources.getString("reset_switch_OFF"));
-        if (returnString.equals("OFF")) {
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            returnString = executeCommand(resources.getString("reset_switch_ON"));
-            if (returnString.equals("ON")) {
-                returnString = executeCommand("service openhab2 restart");
-                if (returnString.equals("")) {
-                    return true;
-                }
-                System.out.println("NAPAKA pri resetiranju openHABa!!!!!");
-                return false;
-            } else {
-                System.out.println("NAPAKA pri ponovnem priklopu elketrike Tinkerforge modulom!!!!!");
-                return false;
-            }
-        } else {
-            System.out.println("NAPAKA pri izklopu elektrike Tinkerforge modulom!!!!!");
+        System.out.println("Kličem stikalo za izklop elektrike Tinkerfog modulom - " + resources.getString("reset_switch"));
+        if (!executeHTTPRequest(resources.getString("reset_switch"), "OFF")) {
+            System.out.println("Napaka pri izklopu elektrike Tinkerforge modulom!");
             return false;
         }
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Kličem stikalo za vklop elektrike Tinkerfog modulom - " + resources.getString("reset_switch"));
 
-//        try {
-//            BrickMaster parent = new BrickMaster(uid, ipConn);
-//            parent.reset();
-//        } catch (TimeoutException | NotConnectedException e) {
-//            e.printStackTrace();
-//        }
+        if (!executeHTTPRequest(resources.getString("reset_switch"), "ON")) {
+            System.out.println("Napaka pri vklopu elektrike Tinkerforge modulom!");
+            return false;
+        } else {
+            returnString = executeCommand("sudo service openhab2 restart");
+            if (returnString.equals("")) {
+                return true;
+            } else {
+                System.out.println("NAPAKA pri resetiranju openHABa!!!!!");
+                System.out.println(returnString);
+                return false;
+            }
+        }
+
     }
 }
